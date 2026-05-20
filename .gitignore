@@ -17,13 +17,14 @@ frontend/.env.*
 !frontend/.env.example
 
 # Kubernetes real secrets. Commit only example templates.
-k8s/*secret.yaml
-k8s/*-secret.yaml
+k8s/*secret*.yaml
+k8s/*secret*.yml
+k8s/*-secret*.yaml
+k8s/*-secret*.yml
 !k8s/examples/*.yaml
 !k8s/examples/*.yml
 !k8s/*.example.yaml
 !k8s/*.example.yml
-
 # Cloud credentials / private keys
 *.pem
 *.key
