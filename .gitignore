@@ -46,3 +46,9 @@ yarn-error.log*
 Thumbs.db
 .vscode/
 .idea/
+
+deploy-gke-clean.ps1
+collect-demo-evidence.ps1
+cleanup-gke-after-demo.ps1
+demo-evidence-*/
+*.local.yaml
