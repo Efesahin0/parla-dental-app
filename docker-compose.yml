@@ -1,0 +1,109 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: parla-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Create .env from .env.example and set POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Create .env from .env.example and set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Create .env from .env.example and set POSTGRES_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - parla_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      parla-network:
+        aliases:
+          - parla-postgres
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: parla-redis
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - parla_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - parla-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    container_name: parla-backend
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      SERVICE_NAME: ${SERVICE_NAME:-parla-dental-backend}
+      BUILD_VERSION: ${BUILD_VERSION:-local-compose}
+      PORT: ${PORT:-4000}
+      DATABASE_URL: ${DATABASE_URL:?Create .env from .env.example and set DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET:?Create .env from .env.example and set JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Create .env from .env.example and set ADMIN_PASSWORD}
+      DENTIST_PASSWORD: ${DENTIST_PASSWORD:?Create .env from .env.example and set DENTIST_PASSWORD}
+      AUTO_MIGRATE: ${AUTO_MIGRATE:-true}
+      LOG_SQL: ${LOG_SQL:-false}
+      REDIS_ENABLED: ${REDIS_ENABLED:-true}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      GOOGLE_REVIEWS_CACHE_TTL_SECONDS: ${GOOGLE_REVIEWS_CACHE_TTL_SECONDS:-1800}
+      GOOGLE_PLACES_API_KEY: ${GOOGLE_PLACES_API_KEY:-}
+      GOOGLE_PLACE_ID: ${GOOGLE_PLACE_ID:-}
+      GOOGLE_PLACE_SEARCH_QUERY: ${GOOGLE_PLACE_SEARCH_QUERY:-Mutludent Ağız ve Diş Sağlığı Polikliniği, Çağlayan, Tıp Fakültesi Cd. 254/a, 06630 Mamak/Ankara}
+      GOOGLE_REVIEWS_LANGUAGE: ${GOOGLE_REVIEWS_LANGUAGE:-tr}
+      GOOGLE_REVIEWS_MAX: ${GOOGLE_REVIEWS_MAX:-3}
+      GOOGLE_MAPS_URL: ${GOOGLE_MAPS_URL:-https://maps.app.goo.gl/tEccPQAjQFgCWiNW9?g_st=iw}
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4000/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      parla-network:
+        aliases:
+          - parla-backend-service
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: parla-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    networks:
+      - parla-network
+    restart: unless-stopped
+
+volumes:
+  parla_postgres_data:
+  parla_redis_data:
+
+networks:
+  parla-network:
+    driver: bridge

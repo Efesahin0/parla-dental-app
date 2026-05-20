@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parla-db-migrate
+  namespace: parla-dental
+spec:
+  backoffLimit: 4
+  template:
+    metadata:
+      labels:
+        app: parla-db-migrate
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: parla-dental-backend:latest
+          imagePullPolicy: IfNotPresent
+          command: ["npm", "run", "migrate"]
+          envFrom:
+            - configMapRef:
+                name: parla-config
+            - secretRef:
+                name: parla-backend-secret

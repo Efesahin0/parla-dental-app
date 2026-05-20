@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: parla-config
+  namespace: parla-dental
+data:
+  NODE_ENV: "production"
+  SERVICE_NAME: "parla-dental-backend"
+  PORT: "4000"
+  JWT_EXPIRES_IN: "1d"
+  CORS_ORIGIN: "*"
+  AUTO_MIGRATE: "false"
+  LOG_SQL: "false"
+  REDIS_ENABLED: "true"
+  REDIS_URL: "redis://parla-redis-service:6379"
+  GOOGLE_REVIEWS_CACHE_TTL_SECONDS: "1800"
+  GOOGLE_PLACE_SEARCH_QUERY: "Mutludent Ağız ve Diş Sağlığı Polikliniği, Çağlayan, Tıp Fakültesi Cd. 254/a, 06630 Mamak/Ankara"
+  GOOGLE_REVIEWS_LANGUAGE: "tr"
+  GOOGLE_REVIEWS_MAX: "3"
+  GOOGLE_MAPS_URL: "https://maps.app.goo.gl/tEccPQAjQFgCWiNW9?g_st=iw"
