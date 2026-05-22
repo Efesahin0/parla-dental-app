@@ -34,14 +34,14 @@ pipeline {
 
     stage('Authenticate Google Cloud') {
       steps {
-        withCredentials([file(credentialsId: 'gcp-service-account-json', variable: 'GCP_KEY_FILE')]) {
-          bat 'gcloud auth activate-service-account --key-file="%GCP_KEY_FILE%"'
-          bat 'gcloud config set project "%PROJECT_ID%"'
-          bat 'gcloud auth list'
-          bat 'gcloud auth configure-docker "%REGION%-docker.pkg.dev" --quiet'
-          bat 'gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin "https://%REGION%-docker.pkg.dev"'
-          bat 'gcloud container clusters get-credentials "%CLUSTER_NAME%" --zone "%CLUSTER_ZONE%" --project "%PROJECT_ID%"'
-        }
+        bat '''
+          gcloud config set account ortakgptgmail@gmail.com
+          gcloud config set project %PROJECT_ID%
+          gcloud auth list
+          gcloud auth configure-docker %REGION%-docker.pkg.dev --quiet
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://%REGION%-docker.pkg.dev
+          gcloud container clusters get-credentials %CLUSTER_NAME% --zone %CLUSTER_ZONE% --project %PROJECT_ID%
+        '''
       }
     }
 
