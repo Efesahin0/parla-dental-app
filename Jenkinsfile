@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    PROJECT_ID = 'dental-clinic-project-496416'
+    PROJECT_ID = 'project-7c2748ca-a066-472f-b79'
     REGION = 'europe-west1'
     REPOSITORY = 'parla-dental'
     CLUSTER_NAME = 'parla-cluster'
