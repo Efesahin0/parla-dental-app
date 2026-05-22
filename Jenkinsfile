@@ -32,18 +32,18 @@ pipeline {
       }
     }
 
-    stage('Authenticate Google Cloud') {
-      steps {
-        bat '''
-          gcloud config set account ortakgptgmail@gmail.com
-          gcloud config set project %PROJECT_ID%
-          gcloud auth list
-          gcloud auth configure-docker %REGION%-docker.pkg.dev --quiet
-          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://%REGION%-docker.pkg.dev
-          gcloud container clusters get-credentials %CLUSTER_NAME% --zone %CLUSTER_ZONE% --project %PROJECT_ID%
-        '''
-      }
-    }
+   stage('Authenticate Google Cloud') {
+  steps {
+    bat 'gcloud config set account ortakgptgmail@gmail.com'
+    bat 'gcloud config set project "%PROJECT_ID%"'
+    bat 'gcloud auth list'
+    bat 'gcloud auth print-access-token > "%WORKSPACE%\\gcp-token.txt"'
+    bat 'type "%WORKSPACE%\\gcp-token.txt" | docker login -u oauth2accesstoken --password-stdin https://%REGION%-docker.pkg.dev'
+    bat 'del "%WORKSPACE%\\gcp-token.txt"'
+    bat 'gcloud auth configure-docker %REGION%-docker.pkg.dev --quiet'
+    bat 'gcloud container clusters get-credentials "%CLUSTER_NAME%" --zone "%CLUSTER_ZONE%" --project "%PROJECT_ID%"'
+  }
+}
 
     stage('Frontend Build Test') {
       steps {
