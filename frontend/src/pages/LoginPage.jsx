@@ -52,16 +52,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="login-demo">
-          <strong>Demo hesap e-postaları</strong>
-          <p>Şifreler GitHub'a yazılmaz. Local kullanımda `.env` içindeki ADMIN_PASSWORD ve DENTIST_PASSWORD değerlerini kullan.</p>
-          <button type="button" onClick={() => { setEmail('admin@parladental.com'); setPassword(''); }}>
-            Admin: admin@parladental.com
-          </button>
-          <button type="button" onClick={() => { setEmail('dentist@parladental.com'); setPassword(''); }}>
-            Dentist: dentist@parladental.com
-          </button>
-        </div>
       </section>
     </main>
   );

@@ -2,114 +2,83 @@ import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout.jsx';
 import { apiRequest } from '../api/http.js';
 
-const emptyPatient = {
-  firstName: '',
-  lastName: '',
-  nationalId: '',
-  phone: '',
-  email: '',
-  birthDate: '',
-  gender: '',
-  address: '',
-  notes: ''
-};
-
-const emptyAppointment = {
-  patientId: '',
-  dentistId: '',
-  appointmentDate: '',
-  appointmentTime: '09:00',
-  service: 'Genel Muayene',
-  notes: ''
-};
-
-export default function AdminDashboard() {
-  const [patients, setPatients] = useState([]);
+export default function DentistDashboard() {
   const [appointments, setAppointments] = useState([]);
-  const [dentists, setDentists] = useState([]);
-  const [requests, setRequests] = useState([]);
-  const [patientForm, setPatientForm] = useState(emptyPatient);
-  const [appointmentForm, setAppointmentForm] = useState(emptyAppointment);
+  const [patients, setPatients] = useState([]);
+  const [selectedPatientId, setSelectedPatientId] = useState('');
+  const [treatments, setTreatments] = useState([]);
+  const [form, setForm] = useState({
+    diagnosis: '',
+    procedure: '',
+    notes: '',
+    treatmentDate: new Date().toISOString().slice(0, 10)
+  });
   const [message, setMessage] = useState('');
 
-  const stats = useMemo(() => ({
-    patients: patients.length,
-    appointments: appointments.length,
-    requests: requests.filter((item) => item.status === 'NEW').length
-  }), [patients, appointments, requests]);
+  const selectedPatient = useMemo(
+    () => patients.find((patient) => String(patient.id) === String(selectedPatientId)),
+    [patients, selectedPatientId]
+  );
 
-  async function loadAll() {
-    const [patientsData, appointmentsData, dentistsData, requestsData] = await Promise.all([
-      apiRequest('/patients'),
+  async function loadInitial() {
+    const [appointmentsData, patientsData] = await Promise.all([
       apiRequest('/appointments'),
-      apiRequest('/appointments/dentists'),
-      apiRequest('/appointment-requests')
+      apiRequest('/patients')
     ]);
 
-    setPatients(patientsData.patients);
     setAppointments(appointmentsData.appointments);
-    setDentists(dentistsData.dentists);
-    setRequests(requestsData.requests);
+    setPatients(patientsData.patients);
+
+    if (!selectedPatientId && patientsData.patients[0]) {
+      setSelectedPatientId(String(patientsData.patients[0].id));
+    }
+  }
+
+  async function loadTreatments(patientId) {
+    if (!patientId) return;
+    const data = await apiRequest(`/treatments/patient/${patientId}`);
+    setTreatments(data.treatments);
   }
 
   useEffect(() => {
-    loadAll().catch((err) => setMessage(err.message));
+    loadInitial().catch((err) => setMessage(err.message));
   }, []);
 
-  function updatePatient(event) {
-    setPatientForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+  useEffect(() => {
+    loadTreatments(selectedPatientId).catch((err) => setMessage(err.message));
+  }, [selectedPatientId]);
+
+  function updateForm(event) {
+    setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
   }
 
-  function updateAppointment(event) {
-    setAppointmentForm((current) => ({ ...current, [event.target.name]: event.target.value }));
-  }
-
-  async function createPatient(event) {
+  async function addTreatment(event) {
     event.preventDefault();
     setMessage('');
 
     try {
-      await apiRequest('/patients', {
-        method: 'POST',
-        body: JSON.stringify(patientForm)
-      });
-
-      setPatientForm(emptyPatient);
-      setMessage('Hasta başarıyla eklendi.');
-      await loadAll();
-    } catch (err) {
-      setMessage(err.message);
-    }
-  }
-
-  async function createAppointment(event) {
-    event.preventDefault();
-    setMessage('');
-
-    try {
-      await apiRequest('/appointments', {
+      await apiRequest('/treatments', {
         method: 'POST',
         body: JSON.stringify({
-          ...appointmentForm,
-          patientId: Number(appointmentForm.patientId),
-          dentistId: Number(appointmentForm.dentistId)
+          patientId: Number(selectedPatientId),
+          diagnosis: form.diagnosis,
+          procedure: form.procedure,
+          notes: form.notes,
+          treatmentDate: form.treatmentDate
         })
       });
 
-      setAppointmentForm(emptyAppointment);
-      setMessage('Randevu başarıyla oluşturuldu.');
-      await loadAll();
+      setForm({
+        diagnosis: '',
+        procedure: '',
+        notes: '',
+        treatmentDate: new Date().toISOString().slice(0, 10)
+      });
+      setMessage('Tedavi kaydı eklendi.');
+      await loadTreatments(selectedPatientId);
     } catch (err) {
       setMessage(err.message);
     }
-  }
-
-  async function updateRequestStatus(id, status) {
-    await apiRequest(`/appointment-requests/${id}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status })
-    });
-    await loadAll();
   }
 
   async function updateAppointmentStatus(id, status) {
@@ -117,109 +86,25 @@ export default function AdminDashboard() {
       method: 'PATCH',
       body: JSON.stringify({ status })
     });
-    await loadAll();
+    await loadInitial();
   }
 
   return (
-    <DashboardLayout title="Admin / Receptionist Dashboard">
+    <DashboardLayout title="Dentist Dashboard">
       {message && <div className="alert">{message}</div>}
 
       <section className="dash-stats">
-        <div className="dash-stat-card"><span>Hasta Sayısı</span><strong>{stats.patients}</strong></div>
-        <div className="dash-stat-card"><span>Randevu Sayısı</span><strong>{stats.appointments}</strong></div>
-        <div className="dash-stat-card"><span>Yeni Talep</span><strong>{stats.requests}</strong></div>
-      </section>
-
-      <section className="dash-grid two">
-        <article className="panel-card">
-          <h2>Yeni Hasta Ekle</h2>
-          <form onSubmit={createPatient} className="compact-form">
-            <div className="form-row">
-              <input name="firstName" value={patientForm.firstName} onChange={updatePatient} required placeholder="Ad" />
-              <input name="lastName" value={patientForm.lastName} onChange={updatePatient} required placeholder="Soyad" />
-            </div>
-            <div className="form-row">
-              <input name="nationalId" value={patientForm.nationalId} onChange={updatePatient} placeholder="TC / Kimlik No" />
-              <input name="phone" value={patientForm.phone} onChange={updatePatient} required placeholder="Telefon" />
-            </div>
-            <div className="form-row">
-              <input name="email" value={patientForm.email} onChange={updatePatient} type="email" placeholder="E-posta" />
-              <input name="birthDate" value={patientForm.birthDate} onChange={updatePatient} type="date" />
-            </div>
-            <div className="form-row">
-              <select name="gender" value={patientForm.gender} onChange={updatePatient}>
-                <option value="">Cinsiyet</option>
-                <option value="Female">Kadın</option>
-                <option value="Male">Erkek</option>
-                <option value="Other">Diğer</option>
-              </select>
-              <input name="address" value={patientForm.address} onChange={updatePatient} placeholder="Adres" />
-            </div>
-            <textarea name="notes" value={patientForm.notes} onChange={updatePatient} placeholder="Notlar" />
-            <button className="btn-primary full">Hasta Ekle</button>
-          </form>
-        </article>
-
-        <article className="panel-card">
-          <h2>Randevu Oluştur</h2>
-          <form onSubmit={createAppointment} className="compact-form">
-            <select name="patientId" value={appointmentForm.patientId} onChange={updateAppointment} required>
-              <option value="">Hasta seç</option>
-              {patients.map((patient) => (
-                <option key={patient.id} value={patient.id}>
-                  {patient.first_name} {patient.last_name}
-                </option>
-              ))}
-            </select>
-
-            <select name="dentistId" value={appointmentForm.dentistId} onChange={updateAppointment} required>
-              <option value="">Diş hekimi seç</option>
-              {dentists.map((dentist) => (
-                <option key={dentist.id} value={dentist.id}>
-                  {dentist.name} — {dentist.specialization}
-                </option>
-              ))}
-            </select>
-
-            <div className="form-row">
-              <input name="appointmentDate" value={appointmentForm.appointmentDate} onChange={updateAppointment} type="date" required />
-              <input name="appointmentTime" value={appointmentForm.appointmentTime} onChange={updateAppointment} type="time" required />
-            </div>
-
-            <input name="service" value={appointmentForm.service} onChange={updateAppointment} placeholder="Hizmet" required />
-            <textarea name="notes" value={appointmentForm.notes} onChange={updateAppointment} placeholder="Randevu notu" />
-            <button className="btn-primary full">Randevu Oluştur</button>
-          </form>
-        </article>
+        <div className="dash-stat-card"><span>Benim Randevularım</span><strong>{appointments.length}</strong></div>
+        <div className="dash-stat-card"><span>Hasta Kayıtları</span><strong>{patients.length}</strong></div>
+        <div className="dash-stat-card"><span>Seçili Hastanın Tedavi Kaydı</span><strong>{treatments.length}</strong></div>
       </section>
 
       <section className="panel-card">
-        <h2>Hastalar</h2>
+        <h2>Kendi Randevularım</h2>
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Ad Soyad</th><th>Telefon</th><th>E-posta</th><th>Not</th></tr>
-            </thead>
-            <tbody>
-              {patients.map((patient) => (
-                <tr key={patient.id}>
-                  <td>{patient.first_name} {patient.last_name}</td>
-                  <td>{patient.phone}</td>
-                  <td>{patient.email || '-'}</td>
-                  <td>{patient.notes || '-'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="panel-card">
-        <h2>Randevular</h2>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Tarih</th><th>Saat</th><th>Hasta</th><th>Dentist</th><th>Hizmet</th><th>Durum</th><th>İşlem</th></tr>
+              <tr><th>Tarih</th><th>Saat</th><th>Hasta</th><th>Telefon</th><th>Hizmet</th><th>Durum</th><th>İşlem</th></tr>
             </thead>
             <tbody>
               {appointments.map((appointment) => (
@@ -227,7 +112,7 @@ export default function AdminDashboard() {
                   <td>{appointment.appointment_date?.slice(0, 10)}</td>
                   <td>{appointment.appointment_time?.slice(0, 5)}</td>
                   <td>{appointment.patient_name}</td>
-                  <td>{appointment.dentist_name}</td>
+                  <td>{appointment.patient_phone}</td>
                   <td>{appointment.service}</td>
                   <td><span className={`status ${appointment.status.toLowerCase()}`}>{appointment.status}</span></td>
                   <td>
@@ -244,34 +129,51 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      <section className="panel-card">
-        <h2>Web Sitesinden Gelen Randevu Talepleri</h2>
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Tarih</th><th>Ad Soyad</th><th>Telefon</th><th>Hizmet</th><th>Tercih</th><th>Durum</th><th>İşlem</th></tr>
-            </thead>
-            <tbody>
-              {requests.map((request) => (
-                <tr key={request.id}>
-                  <td>{request.created_at?.slice(0, 10)}</td>
-                  <td>{request.full_name}</td>
-                  <td>{request.phone}</td>
-                  <td>{request.service}</td>
-                  <td>{request.preferred_date?.slice(0, 10) || '-'} / {request.preferred_time || '-'}</td>
-                  <td><span className={`status ${request.status.toLowerCase()}`}>{request.status}</span></td>
-                  <td>
-                    <select value={request.status} onChange={(event) => updateRequestStatus(request.id, event.target.value)}>
-                      <option>NEW</option>
-                      <option>CONTACTED</option>
-                      <option>CLOSED</option>
-                    </select>
-                  </td>
-                </tr>
+      <section className="dash-grid two">
+        <article className="panel-card">
+          <h2>Hasta Seç ve Tedavi Kaydı Ekle</h2>
+          <form onSubmit={addTreatment} className="compact-form">
+            <select value={selectedPatientId} onChange={(event) => setSelectedPatientId(event.target.value)} required>
+              <option value="">Hasta seç</option>
+              {patients.map((patient) => (
+                <option key={patient.id} value={patient.id}>
+                  {patient.first_name} {patient.last_name} — {patient.phone}
+                </option>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </select>
+
+            {selectedPatient && (
+              <div className="patient-summary">
+                <strong>{selectedPatient.first_name} {selectedPatient.last_name}</strong>
+                <span>{selectedPatient.email || 'E-posta yok'}</span>
+                <span>{selectedPatient.notes || 'Not yok'}</span>
+              </div>
+            )}
+
+            <input name="treatmentDate" value={form.treatmentDate} onChange={updateForm} type="date" required />
+            <input name="diagnosis" value={form.diagnosis} onChange={updateForm} placeholder="Tanı / Diagnosis" required />
+            <input name="procedure" value={form.procedure} onChange={updateForm} placeholder="Uygulanan işlem / Procedure" required />
+            <textarea name="notes" value={form.notes} onChange={updateForm} placeholder="Tedavi notları" />
+            <button className="btn-primary full">Tedavi Kaydı Ekle</button>
+          </form>
+        </article>
+
+        <article className="panel-card">
+          <h2>Tedavi Geçmişi</h2>
+          <div className="timeline">
+            {treatments.length === 0 && <p className="empty-text">Bu hasta için henüz tedavi kaydı yok.</p>}
+
+            {treatments.map((treatment) => (
+              <div className="timeline-item" key={treatment.id}>
+                <div className="timeline-date">{treatment.treatment_date?.slice(0, 10)}</div>
+                <h3>{treatment.procedure}</h3>
+                <p><strong>Tanı:</strong> {treatment.diagnosis}</p>
+                <p>{treatment.notes || 'Ek not yok.'}</p>
+                <small>{treatment.dentist_name}</small>
+              </div>
+            ))}
+          </div>
+        </article>
       </section>
     </DashboardLayout>
   );

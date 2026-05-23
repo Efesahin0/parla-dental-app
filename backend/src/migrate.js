@@ -83,36 +83,86 @@ export async function runMigrationsAndSeed() {
 }
 
 async function seedUsers() {
-  const existing = await query('SELECT COUNT(*)::int AS count FROM users');
-  if (existing.rows[0].count > 0) return;
-
   const adminHash = await bcrypt.hash(config.adminPassword, 10);
   const dentistHash = await bcrypt.hash(config.dentistPassword, 10);
 
-  await query(
-    `INSERT INTO users (name, email, password_hash, role, specialization)
-     VALUES
-     ($1, $2, $3, 'ADMIN', $4),
-     ($5, $6, $7, 'DENTIST', $8),
-     ($9, $10, $11, 'DENTIST', $12)`,
-    [
-      'Parla Reception',
-      'admin@parladental.com',
-      adminHash,
-      'Reception / Clinic Admin',
-      'Dr. Zeynep Arslan',
-      'dentist@parladental.com',
-      dentistHash,
-      'Ortodonti Uzmanı',
-      'Dr. Murat Kaya',
-      'dentist2@parladental.com',
-      dentistHash,
-      'Estetik Diş Hekimliği'
-    ]
-  );
+  const users = [
+    {
+      name: 'Parla Reception',
+      email: 'admin@parladental.com',
+      passwordHash: adminHash,
+      role: 'ADMIN',
+      specialization: 'Resepsiyon / Klinik Yönetimi'
+    },
+    {
+      name: 'Dt. Gonca Görgülü',
+      email: 'dentist@parladental.com',
+      passwordHash: dentistHash,
+      role: 'DENTIST',
+      specialization: 'Estetik Diş Hekimliği ve Gülüş Tasarımı'
+    },
+    {
+      name: 'Dt. Ahmet Yılmaz',
+      email: 'dentist2@parladental.com',
+      passwordHash: dentistHash,
+      role: 'DENTIST',
+      specialization: 'İmplant ve Cerrahi İşlemler'
+    },
+    {
+      name: 'Dt. Elif Kaya',
+      email: 'dentist3@parladental.com',
+      passwordHash: dentistHash,
+      role: 'DENTIST',
+      specialization: 'Çocuk Diş Hekimliği'
+    },
+    {
+      name: 'Dt. Murat Demir',
+      email: 'dentist4@parladental.com',
+      passwordHash: dentistHash,
+      role: 'DENTIST',
+      specialization: 'Protetik Tedaviler'
+    },
+    {
+      name: 'Dt. Derya Şahin',
+      email: 'dentist5@parladental.com',
+      passwordHash: dentistHash,
+      role: 'DENTIST',
+      specialization: 'Ortodontik Uygulamalar'
+    },
+    {
+      name: 'Dt. Can Arslan',
+      email: 'dentist6@parladental.com',
+      passwordHash: dentistHash,
+      role: 'DENTIST',
+      specialization: 'Koruyucu ve Restoratif Tedaviler'
+    }
+  ];
 
-  console.log('Seed users created');
+  for (const user of users) {
+    await query(
+      `
+      INSERT INTO users (name, email, password_hash, role, specialization)
+      VALUES ($1, $2, $3, $4, $5)
+      ON CONFLICT (email)
+      DO UPDATE SET
+        name = EXCLUDED.name,
+        role = EXCLUDED.role,
+        specialization = EXCLUDED.specialization
+      `,
+      [
+        user.name,
+        user.email,
+        user.passwordHash,
+        user.role,
+        user.specialization
+      ]
+    );
+  }
+
+  console.log('Seed users synchronized');
 }
+
+
 
 async function seedDemoPatients() {
   const existing = await query('SELECT COUNT(*)::int AS count FROM patients');
