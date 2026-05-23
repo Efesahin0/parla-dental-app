@@ -6,7 +6,7 @@ export default function AboutSection() {
       <div className="container why-grid">
         <ScrollReveal className="why-img-block">
           <div className="why-stat">
-            <div><div className="why-stat-num">2009</div><div className="why-stat-text">yılından bu yana hizmetinizdeyiz</div></div>
+            <div><div className="why-stat-num">Modern Diş Hekimliği</div><div className="why-stat-text">Kişiye özel muayene ve tedavi planlaması</div></div>
           </div>
           <div className="why-stat">
             <div><div className="why-stat-num">3D</div><div className="why-stat-text">Dijital Tomografi & Smile Design</div></div>
