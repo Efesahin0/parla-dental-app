@@ -1,0 +1,20 @@
+.google-reviews-section{background:var(--bg-light)}
+.reviews-heading-row{display:flex;align-items:flex-start;justify-content:space-between;gap:28px;margin-bottom:34px}
+.google-rating-summary{background:white;border:1px solid var(--border);border-radius:20px;padding:20px;min-width:190px;box-shadow:var(--shadow-soft);display:grid;gap:6px;text-align:center}
+.google-badge{display:inline-flex;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:999px;padding:4px 10px;color:var(--primary);font-weight:800;font-size:13px}
+.google-rating-summary strong{font-size:38px;line-height:1;color:var(--primary-dark)}
+.google-rating-summary small{font-size:12px;color:var(--text-gray);font-weight:700}
+.google-reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.google-review-card{background:white;border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:0 12px 28px rgba(13,59,51,.06);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.google-review-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 18px 38px rgba(13,59,51,.11)}
+.review-card-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.review-avatar{width:46px;height:46px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary-dark);font-weight:900;overflow:hidden;flex-shrink:0}
+.review-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.review-card-top h3{font-size:15px;margin-bottom:3px}
+.review-card-top p{font-size:12px;color:var(--text-gray)}
+.google-review-text{font-size:14px;color:var(--text-gray);line-height:1.7;margin-top:10px}
+.google-review-empty{background:white;border:1px dashed var(--accent);border-radius:22px;padding:34px;text-align:center;max-width:720px;margin:0 auto;box-shadow:var(--shadow-soft)}
+.google-review-empty .empty-icon{font-size:38px;margin-bottom:10px}
+.google-review-empty h3{font-size:20px;margin-bottom:8px;color:var(--primary-dark)}
+.google-review-empty p{color:var(--text-gray);line-height:1.7;margin-bottom:20px}
+.google-review-empty code{background:var(--primary-light);color:var(--primary-dark);padding:2px 6px;border-radius:6px;font-size:13px}
