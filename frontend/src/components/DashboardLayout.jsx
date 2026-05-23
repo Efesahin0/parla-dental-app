@@ -66,7 +66,7 @@ export default function DashboardLayout({ title, children, menuItems = [] }) {
           ))}
 
           <Link to="/">
-            <FaHome className="dash-nav-icon" />
+            
             Siteye Dön
           </Link>
         </nav>

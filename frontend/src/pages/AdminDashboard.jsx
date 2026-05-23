@@ -70,19 +70,46 @@ export default function AdminDashboard() {
     requests: requests.filter((item) => item.status === 'NEW').length
   }), [patients, appointments, dentists, requests]);
 
-  async function loadAll() {
-    const [patientsData, appointmentsData, dentistsData, requestsData] = await Promise.all([
-      apiRequest('/patients'),
-      apiRequest('/appointments'),
-      apiRequest('/users/dentists'),
-      apiRequest('/appointment-requests')
-    ]);
+ async function loadAll() {
+  setMessage('');
 
-    setPatients(patientsData.patients || []);
-    setAppointments(appointmentsData.appointments || []);
-    setDentists(dentistsData.dentists || []);
-    setRequests(requestsData.requests || []);
+  const [patientsResult, appointmentsResult, dentistsResult, requestsResult] = await Promise.allSettled([
+    apiRequest('/patients'),
+    apiRequest('/appointments'),
+    apiRequest('/users/dentists'),
+    apiRequest('/appointment-requests')
+  ]);
+
+  if (patientsResult.status === 'fulfilled') {
+    setPatients(patientsResult.value.patients || []);
   }
+
+  if (appointmentsResult.status === 'fulfilled') {
+    setAppointments(appointmentsResult.value.appointments || []);
+  }
+
+  if (dentistsResult.status === 'fulfilled') {
+    setDentists(dentistsResult.value.dentists || []);
+  } else {
+    const fallbackDentists = await apiRequest('/appointments/dentists');
+    setDentists(fallbackDentists.dentists || []);
+  }
+
+  if (requestsResult.status === 'fulfilled') {
+    setRequests(requestsResult.value.requests || []);
+  }
+
+  const failedRequests = [
+    patientsResult,
+    appointmentsResult,
+    dentistsResult,
+    requestsResult
+  ].filter((result) => result.status === 'rejected');
+
+  if (failedRequests.length > 0) {
+    setMessage('Bazı panel verileri yüklenemedi. Sayfa açık kaldı, işlemlere devam edebilirsin.');
+  }
+}
 
   useEffect(() => {
     loadAll().catch((err) => setMessage(err.message));

@@ -9,7 +9,7 @@ const router = Router();
 
 router.use(authenticate);
 
-router.get('/dentists', asyncHandler(async (req, res) => {
+router.get('/dentists', requireRole('ADMIN', 'DENTIST'), asyncHandler(async (req, res) => {
   const result = await query(
     `
     SELECT id, name, email, specialization, created_at
@@ -38,12 +38,16 @@ router.post('/dentists', requireRole('ADMIN'), asyncHandler(async (req, res) => 
     });
   }
 
-  const existing = await query(
-    'SELECT id FROM users WHERE email = $1',
+  const existingUser = await query(
+    `
+    SELECT id
+    FROM users
+    WHERE email = $1
+    `,
     [email]
   );
 
-  if (existing.rowCount > 0) {
+  if (existingUser.rowCount > 0) {
     return res.status(409).json({
       message: 'Bu e-posta adresiyle kayıtlı bir kullanıcı zaten var.'
     });

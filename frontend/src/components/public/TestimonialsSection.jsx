@@ -1,25 +1,37 @@
-import { testimonials } from '../../data/testimonials.js';
 import ScrollReveal from './ScrollReveal.jsx';
+import TreatmentIcon from './TreatmentIcon.jsx';
+import { treatments } from '../../data/treatments.js';
 
-export default function TestimonialsSection() {
+export default function TreatmentsSection() {
   return (
-    <section className="testimonials-section">
+    <section className="section treatments-section" id="tedaviler">
       <div className="container">
         <ScrollReveal>
-          <div className="section-label">Hasta Yorumları</div>
-          <h2>Hastalarımız Anlatıyor</h2>
-          <p className="section-desc">8.500'den fazla mutlu hastamızın deneyimlerine göz atın.</p>
+          <div className="section-heading centered">
+            <span className="section-label">Tedavilerimiz</span>
+            <h2>Parla Dental’de sunulan tedavi hizmetleri</h2>
+            <p>
+              Kliniğimizde tüm tedavi süreçleri; hasta konforu, hijyen,
+              estetik beklenti ve uzun dönem ağız sağlığı ön planda tutularak
+              planlanmaktadır.
+            </p>
+          </div>
         </ScrollReveal>
 
-        <div className="testimonials-grid">
-          {testimonials.map((item, index) => (
-            <ScrollReveal as="article" className="testimonial-card" key={item.name} delay={index * 100}>
-              <div className="testimonial-stars">★★★★★</div>
-              <p className="testimonial-text">&quot;{item.text}&quot;</p>
-              <div className="testimonial-author">
-                <div className="author-avatar">😊</div>
-                <div><div className="author-name">{item.name}</div><div className="author-date">{item.date}</div></div>
-              </div>
+        <div className="treatments-grid">
+          {treatments.map((treatment, index) => (
+            <ScrollReveal key={treatment.title} delay={index * 80}>
+              <article className="treatment-card">
+                <TreatmentIcon title={treatment.title} />
+
+                <h3>{treatment.title}</h3>
+
+                <ul>
+                  {treatment.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </article>
             </ScrollReveal>
           ))}
         </div>

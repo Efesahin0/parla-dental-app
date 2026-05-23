@@ -2,6 +2,7 @@ import {
   FaBaby,
   FaRegSmile,
   FaShieldAlt,
+  FaStethoscope,
   FaSyringe,
   FaTeethOpen,
   FaTooth,
@@ -37,6 +38,10 @@ function getTreatmentIcon(title = '') {
 
   if (normalizedTitle.includes('çocuk')) {
     return <FaBaby />;
+  }
+
+  if (normalizedTitle.includes('kanal') || normalizedTitle.includes('dolgu')) {
+    return <FaStethoscope />;
   }
 
   return <FaTooth />;
