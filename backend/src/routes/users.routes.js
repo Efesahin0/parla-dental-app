@@ -2,12 +2,14 @@ import bcrypt from 'bcryptjs';
 import { Router } from 'express';
 import { query } from '../db.js';
 import { config } from '../config.js';
-import { requireAuth, requireRole } from '../middleware/auth.js';
+import { authenticate, requireRole } from '../middleware/auth.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
 const router = Router();
 
-router.get('/dentists', requireAuth, asyncHandler(async (req, res) => {
+router.use(authenticate);
+
+router.get('/dentists', asyncHandler(async (req, res) => {
   const result = await query(
     `
     SELECT id, name, email, specialization, created_at
@@ -22,7 +24,7 @@ router.get('/dentists', requireAuth, asyncHandler(async (req, res) => {
   });
 }));
 
-router.post('/dentists', requireAuth, requireRole('ADMIN'), asyncHandler(async (req, res) => {
+router.post('/dentists', requireRole('ADMIN'), asyncHandler(async (req, res) => {
   const {
     name,
     email,
@@ -33,6 +35,17 @@ router.post('/dentists', requireAuth, requireRole('ADMIN'), asyncHandler(async (
   if (!name || !email || !specialization) {
     return res.status(400).json({
       message: 'Ad, e-posta ve uzmanlık alanı zorunludur.'
+    });
+  }
+
+  const existing = await query(
+    'SELECT id FROM users WHERE email = $1',
+    [email]
+  );
+
+  if (existing.rowCount > 0) {
+    return res.status(409).json({
+      message: 'Bu e-posta adresiyle kayıtlı bir kullanıcı zaten var.'
     });
   }
 

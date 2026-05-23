@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { FaClipboardList, FaHome, FaSignOutAlt, FaTooth } from 'react-icons/fa';
 import Logo from './Logo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -17,6 +18,7 @@ export default function DashboardLayout({ title, children, menuItems = [] }) {
     event.preventDefault();
 
     const targetElement = document.getElementById(targetId);
+
     if (targetElement) {
       targetElement.scrollIntoView({
         behavior: 'smooth',
@@ -34,7 +36,7 @@ export default function DashboardLayout({ title, children, menuItems = [] }) {
 
         <div className="dash-user">
           <div className="dash-user-avatar">
-            {isAdmin ? '🧾' : '🦷'}
+            {isAdmin ? <FaClipboardList /> : <FaTooth />}
           </div>
 
           <div>
@@ -63,10 +65,14 @@ export default function DashboardLayout({ title, children, menuItems = [] }) {
             </a>
           ))}
 
-          <Link to="/">Siteye Dön</Link>
+          <Link to="/">
+            <FaHome className="dash-nav-icon" />
+            Siteye Dön
+          </Link>
         </nav>
 
         <button className="dash-logout" onClick={handleLogout}>
+          <FaSignOutAlt />
           Çıkış Yap
         </button>
       </aside>
@@ -77,10 +83,6 @@ export default function DashboardLayout({ title, children, menuItems = [] }) {
             <p className="section-label">Parla Dental Panel</p>
             <h1>{title}</h1>
           </div>
-
-          <span className="dash-pill">
-            12-Factor Demo
-          </span>
         </header>
 
         {children}

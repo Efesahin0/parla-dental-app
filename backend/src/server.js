@@ -12,11 +12,12 @@ import appointmentRoutes from './routes/appointments.routes.js';
 import treatmentRoutes from './routes/treatments.routes.js';
 import appointmentRequestRoutes from './routes/appointmentRequests.routes.js';
 import googleReviewsRoutes from './routes/googleReviews.routes.js';
-import { errorHandler, notFound } from './middleware/errorHandler.js';
 import usersRoutes from './routes/users.routes.js';
+import { errorHandler, notFound } from './middleware/errorHandler.js';
 
 const app = express();
 const startedAt = Date.now();
+
 const metrics = {
   httpRequestsTotal: 0,
   httpResponsesByStatus: new Map()
@@ -25,6 +26,7 @@ const metrics = {
 app.set('trust proxy', 1);
 
 app.use(helmet());
+
 app.use(cors(
   config.corsOrigin === '*'
     ? { origin: '*' }
@@ -33,15 +35,21 @@ app.use(cors(
         credentials: true
       }
 ));
+
 app.use(express.json({ limit: '1mb' }));
 app.use(morgan('combined'));
 
 app.use((req, res, next) => {
   metrics.httpRequestsTotal += 1;
+
   res.on('finish', () => {
     const key = String(res.statusCode);
-    metrics.httpResponsesByStatus.set(key, (metrics.httpResponsesByStatus.get(key) || 0) + 1);
+    metrics.httpResponsesByStatus.set(
+      key,
+      (metrics.httpResponsesByStatus.get(key) || 0) + 1
+    );
   });
+
   next();
 });
 
@@ -49,7 +57,7 @@ app.get('/', (req, res) => {
   res.json({
     service: config.serviceName,
     version: config.buildVersion,
-    message: 'Backend API is running. Frontend: http://localhost:3000, Health: /health, Readiness: /ready, Metrics: /metrics, API base: /api',
+    message: 'Backend API is running.',
     endpoints: {
       health: '/health',
       readiness: '/ready',
@@ -59,7 +67,8 @@ app.get('/', (req, res) => {
       appointments: '/api/appointments',
       appointmentRequests: '/api/appointment-requests',
       treatments: '/api/treatments',
-      googleReviews: '/api/google-reviews'
+      googleReviews: '/api/google-reviews',
+      users: '/api/users'
     }
   });
 });
@@ -78,6 +87,7 @@ app.get('/ready', async (req, res) => {
   try {
     await checkDatabase();
     const redis = await checkRedis();
+
     res.json({
       status: 'ready',
       service: config.serviceName,
@@ -181,5 +191,6 @@ start().catch((err) => {
     message: err.message,
     stack: err.stack
   }));
+
   process.exit(1);
 });
