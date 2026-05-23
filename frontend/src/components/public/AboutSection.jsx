@@ -1,51 +1,93 @@
+import { FaClinicMedical, FaRegSmile, FaShieldAlt, FaUserMd } from 'react-icons/fa';
 import ScrollReveal from './ScrollReveal.jsx';
 
 export default function AboutSection() {
   return (
-    <section id="hakkimizda">
-      <div className="container why-grid">
-        <ScrollReveal className="why-img-block">
-          <div className="why-stat">
-            <div><div className="why-stat-num">2009</div><div className="why-stat-text">yılından bu yana hizmetinizdeyiz</div></div>
-          </div>
-          <div className="why-stat">
-            <div><div className="why-stat-num">3D</div><div className="why-stat-text">Dijital Tomografi & Smile Design</div></div>
-          </div>
-          <div className="why-stat">
-            <div><div className="why-stat-num">SGK</div><div className="why-stat-text">Anlaşmalı kurum süreç takibi</div></div>
+    <section className="section about-section" id="hakkimizda">
+      <div className="container about-grid">
+        <ScrollReveal>
+          <div className="about-content">
+            <span className="section-label">Hakkımızda</span>
+
+            <h2>
+              Parla Dental’de modern, güvenilir ve hasta odaklı diş hekimliği yaklaşımı
+            </h2>
+
+            <p>
+              Parla Dental, ağız ve diş sağlığı hizmetlerini modern klinik anlayışıyla
+              sunmak amacıyla kurulmuş yeni nesil bir diş kliniğidir. Kliniğimizde
+              tedavi süreçleri; hastanın beklentileri, ağız sağlığı ihtiyaçları ve
+              uzun dönem başarı hedefi birlikte değerlendirilerek planlanır.
+            </p>
+
+            <p>
+              Estetik diş hekimliği, implant tedavileri, protetik uygulamalar,
+              koruyucu ve restoratif tedaviler gibi farklı alanlarda; hijyen,
+              hasta konforu ve güncel tedavi yaklaşımları ön planda tutulur.
+              Amacımız, hastalarımıza güven veren, açıklayıcı ve konforlu bir
+              klinik deneyimi sunmaktır.
+            </p>
+
+            <div className="about-highlights">
+              <div className="about-highlight">
+                <FaUserMd />
+                <div>
+                  <strong>Uzman yaklaşım</strong>
+                  <span>Kişiye özel muayene ve tedavi planlaması</span>
+                </div>
+              </div>
+
+              <div className="about-highlight">
+                <FaShieldAlt />
+                <div>
+                  <strong>Hijyen ve güven</strong>
+                  <span>Klinik süreçlerde sterilizasyon ve hasta güvenliği</span>
+                </div>
+              </div>
+
+              <div className="about-highlight">
+                <FaRegSmile />
+                <div>
+                  <strong>Doğal estetik</strong>
+                  <span>Fonksiyon ve estetiği birlikte değerlendiren çözümler</span>
+                </div>
+              </div>
+            </div>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={120}>
-          <div className="section-label">Neden Parla Dental?</div>
-          <h2>Güven Veren, Modern Diş Hekimliği</h2>
-          <p className="section-desc">15 yılı aşkın tecrübemizle Ankara'da diş sağlığı alanında fark yaratıyoruz.</p>
+          <div className="about-card">
+            <div className="about-card-icon">
+              <FaClinicMedical />
+            </div>
 
-          <div className="why-features">
-            <div className="why-feature">
-              <div className="why-feature-icon">🏆</div>
-              <div className="why-feature-text">
-                <div className="title">Uzman Kadro</div>
-                <div className="desc">Tüm branşlarda uzman diş hekimleri ve yardımcı sağlık personeli.</div>
+            <h3>Yeni nesil klinik deneyimi</h3>
+
+            <p>
+              Parla Dental’de randevu, hasta kayıtları ve tedavi geçmişleri
+              düzenli bir sistem üzerinden takip edilir. Bu sayede hem klinik
+              işleyişi daha planlı hale gelir hem de hastaların tedavi süreçleri
+              daha kontrollü şekilde yönetilir.
+            </p>
+
+            <div className="about-values">
+              <div>
+                <strong>Hasta odaklı</strong>
+                <span>Her hasta için anlaşılır ve şeffaf süreç</span>
               </div>
-            </div>
-            <div className="why-feature">
-              <div className="why-feature-icon">🔬</div>
-              <div className="why-feature-text">
-                <div className="title">İleri Teknoloji</div>
-                <div className="desc">Dijital röntgen, 3D tomografi, CAD/CAM sistem ve lazer teknolojileri.</div>
+
+              <div>
+                <strong>Modern yaklaşım</strong>
+                <span>Güncel tedavi yöntemlerine uyumlu klinik anlayışı</span>
               </div>
-            </div>
-            <div className="why-feature">
-              <div className="why-feature-icon">📱</div>
-              <div className="why-feature-text">
-                <div className="title">Kolay Randevu & Takip</div>
-                <div className="desc">Online randevu ve tedavi takip sistemi ile merkezi yönetim.</div>
+
+              <div>
+                <strong>Düzenli takip</strong>
+                <span>Randevu ve tedavi geçmişinin merkezi yönetimi</span>
               </div>
             </div>
           </div>
-
-          <a className="btn-primary" href="#randevu">Ücretsiz Konsültasyon Al</a>
         </ScrollReveal>
       </div>
     </section>

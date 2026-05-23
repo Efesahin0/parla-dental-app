@@ -39,7 +39,7 @@ export default function TreatmentsSection() {
         </div>
 
         <ScrollReveal className="treatments-note" delay={120}>
-          <div className="note-icon">✦</div>
+          <div className="note-icon">○</div>
           <p>{treatmentsNote}</p>
           <a className="btn-primary" href="#randevu">Tedavi İçin Randevu Al</a>
         </ScrollReveal>
