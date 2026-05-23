@@ -2,13 +2,27 @@ import { Link, useNavigate } from 'react-router-dom';
 import Logo from './Logo.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 
-export default function DashboardLayout({ title, children }) {
+export default function DashboardLayout({ title, children, menuItems = [] }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const isAdmin = user?.role === 'ADMIN';
 
   function handleLogout() {
     logout();
     navigate('/');
+  }
+
+  function handleMenuClick(event, targetId) {
+    event.preventDefault();
+
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
   }
 
   return (
@@ -19,19 +33,42 @@ export default function DashboardLayout({ title, children }) {
         </Link>
 
         <div className="dash-user">
-          <div className="dash-user-avatar">{user?.role === 'ADMIN' ? '🧾' : '🦷'}</div>
+          <div className="dash-user-avatar">
+            {isAdmin ? '🧾' : '🦷'}
+          </div>
+
           <div>
-            <div className="dash-user-name">{user?.name}</div>
-            <div className="dash-user-role">{user?.role === 'ADMIN' ? 'Admin / Receptionist' : 'Dentist'}</div>
+            <div className="dash-user-name">
+              {user?.name || 'Parla Dental Kullanıcısı'}
+            </div>
+
+            <div className="dash-user-role">
+              {isAdmin ? 'Yönetici / Resepsiyon' : 'Diş Hekimi'}
+            </div>
           </div>
         </div>
 
         <nav className="dash-nav">
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/">Public Site</Link>
+          <div className="dash-nav-title">
+            {isAdmin ? 'Yönetim Menüsü' : 'Hekim Menüsü'}
+          </div>
+
+          {menuItems.map((item) => (
+            <a
+              key={item.id}
+              href={`#${item.id}`}
+              onClick={(event) => handleMenuClick(event, item.id)}
+            >
+              {item.label}
+            </a>
+          ))}
+
+          <Link to="/">Siteye Dön</Link>
         </nav>
 
-        <button className="dash-logout" onClick={handleLogout}>Çıkış Yap</button>
+        <button className="dash-logout" onClick={handleLogout}>
+          Çıkış Yap
+        </button>
       </aside>
 
       <main className="dash-main">
@@ -40,7 +77,10 @@ export default function DashboardLayout({ title, children }) {
             <p className="section-label">Parla Dental Panel</p>
             <h1>{title}</h1>
           </div>
-          <span className="dash-pill">12-Factor Demo</span>
+
+          <span className="dash-pill">
+            12-Factor Demo
+          </span>
         </header>
 
         {children}

@@ -35,6 +35,15 @@ const requestStatusLabels = {
   CLOSED: 'Kapatıldı'
 };
 
+const adminMenuItems = [
+  { id: 'yonetim-ozeti', label: 'Yönetim Özeti' },
+  { id: 'hasta-ekle', label: 'Hasta Ekle' },
+  { id: 'randevu-olustur', label: 'Randevu Oluştur' },
+  { id: 'hasta-listesi', label: 'Hasta Listesi' },
+  { id: 'randevu-listesi', label: 'Randevular' },
+  { id: 'web-talepleri', label: 'Web Talepleri' }
+];
+
 export default function AdminDashboard() {
   const [patients, setPatients] = useState([]);
   const [appointments, setAppointments] = useState([]);
@@ -155,10 +164,10 @@ export default function AdminDashboard() {
   }
 
   return (
-    <DashboardLayout title="Yönetim Paneli">
+    <DashboardLayout title="Yönetim Paneli" menuItems={adminMenuItems}>
       {message && <div className="alert">{message}</div>}
 
-      <section className="dash-stats">
+      <section id="yonetim-ozeti" className="dash-stats">
         <div className="dash-stat-card">
           <span>Hasta Sayısı</span>
           <strong>{stats.patients}</strong>
@@ -176,7 +185,7 @@ export default function AdminDashboard() {
       </section>
 
       <section className="dash-grid two">
-        <article className="panel-card">
+        <article id="hasta-ekle" className="panel-card">
           <h2>Yeni Hasta Ekle</h2>
 
           <form onSubmit={createPatient} className="compact-form">
@@ -259,7 +268,7 @@ export default function AdminDashboard() {
           </form>
         </article>
 
-        <article className="panel-card">
+        <article id="randevu-olustur" className="panel-card">
           <h2>Randevu Oluştur</h2>
 
           <form onSubmit={createAppointment} className="compact-form">
@@ -329,7 +338,7 @@ export default function AdminDashboard() {
         </article>
       </section>
 
-      <section className="panel-card">
+      <section id="hasta-listesi" className="panel-card">
         <h2>Hastalar</h2>
 
         <div className="table-wrap">
@@ -363,7 +372,7 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      <section className="panel-card">
+      <section id="randevu-listesi" className="panel-card">
         <h2>Randevular</h2>
 
         <div className="table-wrap">
@@ -416,7 +425,7 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      <section className="panel-card">
+      <section id="web-talepleri" className="panel-card">
         <h2>Web Sitesinden Gelen Randevu Talepleri</h2>
 
         <div className="table-wrap">

@@ -8,6 +8,13 @@ const appointmentStatusLabels = {
   CANCELLED: 'İptal Edildi'
 };
 
+const dentistMenuItems = [
+  { id: 'hekim-ozeti', label: 'Hekim Özeti' },
+  { id: 'randevularim', label: 'Randevularım' },
+  { id: 'tedavi-kaydi', label: 'Tedavi Kaydı Ekle' },
+  { id: 'tedavi-gecmisi', label: 'Tedavi Geçmişi' }
+];
+
 function getPatientIdFromAppointment(appointment) {
   return appointment.patient_id || appointment.patientId || appointment.patient?.id || '';
 }
@@ -22,14 +29,15 @@ function buildPatientsFromAppointments(appointments) {
       return;
     }
 
-    const [firstName = '', ...lastNameParts] = String(appointment.patient_name || '').split(' ');
+    const fullName = appointment.patient_name || 'Hasta';
+    const [firstName = '', ...lastNameParts] = String(fullName).split(' ');
     const lastName = lastNameParts.join(' ');
 
     patientMap.set(String(patientId), {
       id: patientId,
-      first_name: firstName || appointment.patient_name || 'Hasta',
+      first_name: firstName || fullName,
       last_name: lastName,
-      full_name: appointment.patient_name || 'Hasta',
+      full_name: fullName,
       phone: appointment.patient_phone || '-',
       email: appointment.patient_email || '',
       notes: appointment.patient_notes || ''
@@ -151,10 +159,10 @@ export default function DentistDashboard() {
   }
 
   return (
-    <DashboardLayout title="Diş Hekimi Paneli">
+    <DashboardLayout title="Diş Hekimi Paneli" menuItems={dentistMenuItems}>
       {message && <div className="alert">{message}</div>}
 
-      <section className="dash-stats">
+      <section id="hekim-ozeti" className="dash-stats">
         <div className="dash-stat-card">
           <span>Benim Randevularım</span>
           <strong>{appointments.length}</strong>
@@ -171,7 +179,7 @@ export default function DentistDashboard() {
         </div>
       </section>
 
-      <section className="panel-card">
+      <section id="randevularim" className="panel-card">
         <h2>Kendi Randevularım</h2>
 
         <div className="table-wrap">
@@ -225,7 +233,7 @@ export default function DentistDashboard() {
       </section>
 
       <section className="dash-grid two">
-        <article className="panel-card">
+        <article id="tedavi-kaydi" className="panel-card">
           <h2>Hasta Seç ve Tedavi Kaydı Ekle</h2>
 
           <form onSubmit={addTreatment} className="compact-form">
@@ -296,7 +304,7 @@ export default function DentistDashboard() {
           </form>
         </article>
 
-        <article className="panel-card">
+        <article id="tedavi-gecmisi" className="panel-card">
           <h2>Tedavi Geçmişi</h2>
 
           <div className="timeline">
