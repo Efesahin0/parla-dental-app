@@ -32,9 +32,9 @@ pipeline {
       }
     }
 
-   stage('Authenticate Google Cloud') {
+  stage('Authenticate Google Cloud') {
   steps {
-    bat 'gcloud config set account ortakgptgmail@gmail.com'
+    bat 'gcloud config set account jenkins-gke-deployer@dental-clinic-project-496416.iam.gserviceaccount.com'
     bat 'gcloud config set project "%PROJECT_ID%"'
     bat 'gcloud auth list'
     bat 'gcloud auth print-access-token > "%WORKSPACE%\\gcp-token.txt"'
