@@ -1,68 +1,51 @@
-const icons = {
-  aesthetic: (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M21 34c3.9-9.2 9.8-15.1 19-19" />
-      <path d="M39 13l2.1 6.2 6.2 2.1-6.2 2.1L39 29.5l-2.1-6.1-6.2-2.1 6.2-2.1L39 13z" />
-      <path d="M20.4 36.2c-4.7 4.8-6.6 9.6-5 12 2.2 3.4 12 .9 21.9-5.5s16.1-14.3 13.9-17.7c-1-1.6-4.1-1.8-8.3-.8" />
-      <path d="M15 49c6.4.9 13.7-.5 21.1-4.5" />
-    </svg>
-  ),
-  implant: (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M24 14c2.7-2.1 5.8-3 8-3s5.3.9 8 3c3.6 2.8 5.7 7 4.7 12.2-.7 3.6-2.7 6.8-4.5 9.6-1.4 2.1-2.1 4.2-2.8 6.6C36.4 46.1 34.9 52 32 52s-4.4-5.9-5.4-9.6c-.7-2.4-1.4-4.5-2.8-6.6-1.8-2.8-3.8-6-4.5-9.6C18.3 21 20.4 16.8 24 14z" />
-      <path d="M27 37h10" />
-      <path d="M26 43h12" />
-      <path d="M28 49h8" />
-      <path d="M32 17v15" />
-    </svg>
-  ),
-  prosthetic: (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M16 35c3.5-9.8 7.3-15.2 13.3-15.2 3 0 4.7 1.3 6.7 1.3s3.7-1.3 6.7-1.3C49.4 19.8 53 26.6 54 35" />
-      <path d="M18 35h36" />
-      <path d="M20 35v7.7c0 5.7 3.8 10.3 8.5 10.3 3.1 0 5.7-2.1 7.5-5.1 1.8 3 4.4 5.1 7.5 5.1 4.7 0 8.5-4.6 8.5-10.3V35" />
-      <path d="M28 35v14" />
-      <path d="M44 35v14" />
-    </svg>
-  ),
-  restorative: (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M22 15c2.7-2 6-3 10-3s7.3 1 10 3c4.2 3.1 5.4 8.7 3.1 14.1-1.2 2.8-3.3 5-5.1 7.3-1.5 1.9-2.1 4.1-2.6 6.6C36.7 46.5 35.4 52 32 52s-4.7-5.5-5.4-9c-.5-2.5-1.1-4.7-2.6-6.6-1.8-2.3-3.9-4.5-5.1-7.3C16.6 23.7 17.8 18.1 22 15z" />
-      <path d="M24 28h16" />
-      <path d="M32 20v16" />
-      <path d="M47 12l1.3 3.7L52 17l-3.7 1.3L47 22l-1.3-3.7L42 17l3.7-1.3L47 12z" />
-    </svg>
-  ),
-  surgery: (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M20 45l24-24" />
-      <path d="M40 17l7 7" />
-      <path d="M17 48l6-1 22-22-6-6-22 22-1 6z" />
-      <path d="M45 15l4-4 4 4-4 4" />
-      <path d="M14 53h20" />
-    </svg>
-  ),
-  orthodontic: (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M17 32c3.4-7.7 7.5-12 15-12s11.6 4.3 15 12" />
-      <path d="M18 32h28" />
-      <path d="M21 32v8c0 4.4 3 8 6.6 8 2.1 0 3.6-1.2 4.4-2.9.8 1.7 2.3 2.9 4.4 2.9C40 48 43 44.4 43 40v-8" />
-      <path d="M23 28h4v8h-4z" />
-      <path d="M30 28h4v8h-4z" />
-      <path d="M37 28h4v8h-4z" />
-      <path d="M20 36h24" />
-    </svg>
-  ),
-  pediatric: (
-    <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M24 19c2.5-1.9 5.3-2.7 8-2.7s5.5.8 8 2.7c3.5 2.7 4.4 7.7 2.6 12.2-1 2.3-2.7 4.4-4.1 6.1-1.3 1.6-1.8 3.4-2.3 5.6-.7 3.2-1.8 7.9-4.2 7.9s-3.5-4.7-4.2-7.9c-.5-2.2-1-4-2.3-5.6-1.4-1.7-3.1-3.8-4.1-6.1C19.6 26.7 20.5 21.7 24 19z" />
-      <path d="M15 18l1.4 4.1 4.1 1.4-4.1 1.4L15 30l-1.4-4.1-4.1-1.4 4.1-1.4L15 18z" />
-      <path d="M49 35l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" />
-      <path d="M28 30c1.2 1.2 2.5 1.8 4 1.8s2.8-.6 4-1.8" />
-    </svg>
-  )
-};
+import {
+  FaBaby,
+  FaRegSmile,
+  FaShieldAlt,
+  FaSyringe,
+  FaTeethOpen,
+  FaTooth,
+  FaUserMd
+} from 'react-icons/fa';
 
-export default function TreatmentIcon({ name }) {
-  return <span className="treatment-icon" aria-hidden="true">{icons[name] || icons.restorative}</span>;
+function getTreatmentIcon(title = '') {
+  const normalizedTitle = title.toLocaleLowerCase('tr-TR');
+
+  if (normalizedTitle.includes('estetik')) {
+    return <FaRegSmile />;
+  }
+
+  if (normalizedTitle.includes('implant')) {
+    return <FaTooth />;
+  }
+
+  if (normalizedTitle.includes('protetik')) {
+    return <FaTeethOpen />;
+  }
+
+  if (normalizedTitle.includes('koruyucu') || normalizedTitle.includes('restoratif')) {
+    return <FaShieldAlt />;
+  }
+
+  if (normalizedTitle.includes('cerrahi')) {
+    return <FaSyringe />;
+  }
+
+  if (normalizedTitle.includes('ortodontik')) {
+    return <FaUserMd />;
+  }
+
+  if (normalizedTitle.includes('çocuk')) {
+    return <FaBaby />;
+  }
+
+  return <FaTooth />;
+}
+
+export default function TreatmentIcon({ title }) {
+  return (
+    <span className="treatment-icon" aria-hidden="true">
+      {getTreatmentIcon(title)}
+    </span>
+  );
 }

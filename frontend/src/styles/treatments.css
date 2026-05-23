@@ -86,13 +86,7 @@
   stroke-linecap:round;
   stroke-linejoin:round;
 }
-.treatment-number{
-  font-family:var(--font-display);
-  color:rgba(198,161,91,.55);
-  font-size:34px;
-  font-weight:700;
-  line-height:1;
-}
+
 .treatment-card h3{
   position:relative;
   z-index:1;
@@ -177,4 +171,30 @@
   color:#fff;
   white-space:nowrap;
   box-shadow:none;
+}
+
+.treatment-icon {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  background: rgba(8, 64, 50, 0.08);
+  color: var(--color-deep-green);
+  font-size: 1.55rem;
+  margin-bottom: 16px;
+}
+
+.treatment-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.treatment-card {
+  position: relative;
+}
+
+.treatment-card h3 {
+  margin-top: 0;
 }
