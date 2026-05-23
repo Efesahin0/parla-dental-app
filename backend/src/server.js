@@ -13,6 +13,7 @@ import treatmentRoutes from './routes/treatments.routes.js';
 import appointmentRequestRoutes from './routes/appointmentRequests.routes.js';
 import googleReviewsRoutes from './routes/googleReviews.routes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+import usersRoutes from './routes/users.routes.js';
 
 const app = express();
 const startedAt = Date.now();
@@ -120,6 +121,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/treatments', treatmentRoutes);
 app.use('/api/appointment-requests', appointmentRequestRoutes);
 app.use('/api/google-reviews', googleReviewsRoutes);
+app.use('/api/users', usersRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

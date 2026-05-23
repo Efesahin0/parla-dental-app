@@ -14,6 +14,13 @@ const emptyPatient = {
   notes: ''
 };
 
+const emptyDentist = {
+  name: '',
+  email: '',
+  password: '',
+  specialization: ''
+};
+
 const emptyAppointment = {
   patientId: '',
   dentistId: '',
@@ -41,7 +48,9 @@ const adminMenuItems = [
   { id: 'randevu-olustur', label: 'Randevu Oluştur' },
   { id: 'hasta-listesi', label: 'Hasta Listesi' },
   { id: 'randevu-listesi', label: 'Randevular' },
-  { id: 'web-talepleri', label: 'Web Talepleri' }
+  { id: 'web-talepleri', label: 'Web Talepleri' },
+  { id: 'hekim-ekle', label: 'Hekim Ekle' },
+  { id: 'hekim-listesi', label: 'Hekim Listesi' },
 ];
 
 export default function AdminDashboard() {
@@ -52,6 +61,7 @@ export default function AdminDashboard() {
   const [patientForm, setPatientForm] = useState(emptyPatient);
   const [appointmentForm, setAppointmentForm] = useState(emptyAppointment);
   const [message, setMessage] = useState('');
+  const [dentistForm, setDentistForm] = useState(emptyDentist);
 
   const stats = useMemo(() => ({
     patients: patients.length,
@@ -162,6 +172,31 @@ export default function AdminDashboard() {
       setMessage(err.message);
     }
   }
+
+  function updateDentist(event) {
+  setDentistForm((current) => ({
+    ...current,
+    [event.target.name]: event.target.value
+  }));
+}
+
+async function createDentist(event) {
+  event.preventDefault();
+  setMessage('');
+
+  try {
+    await apiRequest('/users/dentists', {
+      method: 'POST',
+      body: JSON.stringify(dentistForm)
+    });
+
+    setDentistForm(emptyDentist);
+    setMessage('Diş hekimi başarıyla eklendi.');
+    await loadAll();
+  } catch (err) {
+    setMessage(err.message);
+  }
+}
 
   return (
     <DashboardLayout title="Yönetim Paneli" menuItems={adminMenuItems}>
@@ -335,7 +370,50 @@ export default function AdminDashboard() {
 
             <button className="btn-primary full">Randevu Oluştur</button>
           </form>
-        </article>
+            </article>
+
+            <article id="hekim-ekle" className="panel-card">
+      <h2>Diş Hekimi Ekle</h2>
+
+      <form onSubmit={createDentist} className="compact-form">
+        <input
+          name="name"
+          value={dentistForm.name}
+          onChange={updateDentist}
+          required
+          placeholder="Ad Soyad"
+        />
+
+        <input
+          name="email"
+          value={dentistForm.email}
+          onChange={updateDentist}
+          required
+          type="email"
+          placeholder="E-posta"
+        />
+
+        <input
+          name="password"
+          value={dentistForm.password}
+          onChange={updateDentist}
+          type="password"
+          placeholder="Şifre / boş bırakılırsa varsayılan şifre kullanılır"
+        />
+
+        <input
+          name="specialization"
+          value={dentistForm.specialization}
+          onChange={updateDentist}
+          required
+          placeholder="Uzmanlık alanı"
+        />
+
+        <button className="btn-primary full">Diş Hekimi Ekle</button>
+      </form>
+    </article>
+
+    
       </section>
 
       <section id="hasta-listesi" className="panel-card">
@@ -479,6 +557,38 @@ export default function AdminDashboard() {
           </table>
         </div>
       </section>
+
+      <section id="hekim-listesi" className="panel-card">
+  <h2>Diş Hekimleri</h2>
+
+  <div className="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Ad Soyad</th>
+          <th>E-posta</th>
+          <th>Uzmanlık</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {dentists.map((dentist) => (
+          <tr key={dentist.id}>
+            <td>{dentist.name}</td>
+            <td>{dentist.email || '-'}</td>
+            <td>{dentist.specialization || '-'}</td>
+          </tr>
+        ))}
+
+        {dentists.length === 0 && (
+          <tr>
+            <td colSpan="3">Henüz diş hekimi kaydı yok.</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</section>
     </DashboardLayout>
   );
 }

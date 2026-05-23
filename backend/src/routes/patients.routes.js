@@ -30,7 +30,7 @@ router.get('/:id', requireRole('ADMIN', 'DENTIST'), asyncHandler(async (req, res
   res.json({ patient: result.rows[0] });
 }));
 
-router.post('/', requireRole('ADMIN'), asyncHandler(async (req, res) => {
+router.post('/', requireRole('ADMIN' , 'DENTIST'), asyncHandler(async (req, res) => {
   const {
     firstName,
     lastName,

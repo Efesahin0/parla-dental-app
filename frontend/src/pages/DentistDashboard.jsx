@@ -12,7 +12,8 @@ const dentistMenuItems = [
   { id: 'hekim-ozeti', label: 'Hekim Özeti' },
   { id: 'randevularim', label: 'Randevularım' },
   { id: 'tedavi-kaydi', label: 'Tedavi Kaydı Ekle' },
-  { id: 'tedavi-gecmisi', label: 'Tedavi Geçmişi' }
+  { id: 'tedavi-gecmisi', label: 'Tedavi Geçmişi' },
+  { id: 'hasta-ekle', label: 'Hasta Ekle' },
 ];
 
 function getPatientIdFromAppointment(appointment) {
@@ -58,6 +59,42 @@ export default function DentistDashboard() {
     treatmentDate: new Date().toISOString().slice(0, 10)
   });
   const [message, setMessage] = useState('');
+  const emptyPatient = {
+  firstName: '',
+  lastName: '',
+  nationalId: '',
+  phone: '',
+  email: '',
+  birthDate: '',
+  gender: '',
+  address: '',
+  notes: ''
+};
+const [patientForm, setPatientForm] = useState(emptyPatient);
+function updatePatient(event) {
+  setPatientForm((current) => ({
+    ...current,
+    [event.target.name]: event.target.value
+  }));
+}
+
+async function createPatient(event) {
+  event.preventDefault();
+  setMessage('');
+
+  try {
+    await apiRequest('/patients', {
+      method: 'POST',
+      body: JSON.stringify(patientForm)
+    });
+
+    setPatientForm(emptyPatient);
+    setMessage('Hasta başarıyla eklendi.');
+    await loadInitial();
+  } catch (err) {
+    setMessage(err.message);
+  }
+}
 
   const patients = useMemo(
     () => buildPatientsFromAppointments(appointments),
@@ -231,6 +268,89 @@ export default function DentistDashboard() {
           </table>
         </div>
       </section>
+
+      <section id="hasta-ekle" className="panel-card">
+  <h2>Hasta Ekle</h2>
+
+  <form onSubmit={createPatient} className="compact-form">
+    <div className="form-row">
+      <input
+        name="firstName"
+        value={patientForm.firstName}
+        onChange={updatePatient}
+        required
+        placeholder="Ad"
+      />
+
+      <input
+        name="lastName"
+        value={patientForm.lastName}
+        onChange={updatePatient}
+        required
+        placeholder="Soyad"
+      />
+    </div>
+
+    <div className="form-row">
+      <input
+        name="nationalId"
+        value={patientForm.nationalId}
+        onChange={updatePatient}
+        placeholder="TC / Kimlik No"
+      />
+
+      <input
+        name="phone"
+        value={patientForm.phone}
+        onChange={updatePatient}
+        required
+        placeholder="Telefon"
+      />
+    </div>
+
+    <div className="form-row">
+      <input
+        name="email"
+        value={patientForm.email}
+        onChange={updatePatient}
+        type="email"
+        placeholder="E-posta"
+      />
+
+      <input
+        name="birthDate"
+        value={patientForm.birthDate}
+        onChange={updatePatient}
+        type="date"
+      />
+    </div>
+
+    <div className="form-row">
+      <select name="gender" value={patientForm.gender} onChange={updatePatient}>
+        <option value="">Cinsiyet</option>
+        <option value="Female">Kadın</option>
+        <option value="Male">Erkek</option>
+        <option value="Other">Diğer</option>
+      </select>
+
+      <input
+        name="address"
+        value={patientForm.address}
+        onChange={updatePatient}
+        placeholder="Adres"
+      />
+    </div>
+
+    <textarea
+      name="notes"
+      value={patientForm.notes}
+      onChange={updatePatient}
+      placeholder="Hasta notu"
+    />
+
+    <button className="btn-primary full">Hasta Ekle</button>
+  </form>
+</section>
 
       <section className="dash-grid two">
         <article id="tedavi-kaydi" className="panel-card">
