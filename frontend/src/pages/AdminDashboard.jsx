@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout.jsx';
 import { apiRequest } from '../api/http.js';
+import { useLanguage } from '../i18n/LanguageContext.jsx';
 
 const emptyPatient = {
   firstName: '',
@@ -24,6 +25,7 @@ const emptyAppointment = {
 };
 
 export default function AdminDashboard() {
+  const { language } = useLanguage();
   const [patients, setPatients] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [dentists, setDentists] = useState([]);
@@ -31,6 +33,33 @@ export default function AdminDashboard() {
   const [patientForm, setPatientForm] = useState(emptyPatient);
   const [appointmentForm, setAppointmentForm] = useState(emptyAppointment);
   const [message, setMessage] = useState('');
+
+  const labels = language === 'en'
+    ? {
+      title: 'Admin / Receptionist Dashboard',
+      summary: 'Patient intake, appointment planning and website requests are managed from this panel.',
+      overview: 'Overview', addPatient: 'Add Patient', createAppointment: 'Create Appointment', patientList: 'Patients', appointmentList: 'Appointments', requestList: 'Website Requests',
+      patientCount: 'Patients', appointmentCount: 'Appointments', newRequests: 'New Requests', newPatient: 'New Patient', firstName: 'First Name', lastName: 'Last Name', id: 'ID Number', phone: 'Phone', email: 'Email', gender: 'Gender', female: 'Female', male: 'Male', other: 'Other', address: 'Address', notes: 'Notes', savePatient: 'Save Patient',
+      selectPatient: 'Select patient', selectDentist: 'Select dentist', service: 'Service', appointmentNote: 'Appointment note', saveAppointment: 'Create Appointment',
+      fullName: 'Full Name', dentist: 'Dentist', status: 'Status', action: 'Action', date: 'Date', time: 'Time', preference: 'Preference', noValue: '-'
+    }
+    : {
+      title: 'Admin / Receptionist Dashboard',
+      summary: 'Hasta kabul, randevu planlama ve web talepleri bu panelden yönetilir.',
+      overview: 'Genel Bakış', addPatient: 'Hasta Ekle', createAppointment: 'Randevu Oluştur', patientList: 'Hastalar', appointmentList: 'Randevular', requestList: 'Web Talepleri',
+      patientCount: 'Hasta Sayısı', appointmentCount: 'Randevu Sayısı', newRequests: 'Yeni Talep', newPatient: 'Yeni Hasta Ekle', firstName: 'Ad', lastName: 'Soyad', id: 'TC / Kimlik No', phone: 'Telefon', email: 'E-posta', gender: 'Cinsiyet', female: 'Kadın', male: 'Erkek', other: 'Diğer', address: 'Adres', notes: 'Notlar', savePatient: 'Hasta Ekle',
+      selectPatient: 'Hasta seç', selectDentist: 'Diş hekimi seç', service: 'Hizmet', appointmentNote: 'Randevu notu', saveAppointment: 'Randevu Oluştur',
+      fullName: 'Ad Soyad', dentist: 'Dentist', status: 'Durum', action: 'İşlem', date: 'Tarih', time: 'Saat', preference: 'Tercih', noValue: '-'
+    };
+
+  const navItems = [
+    { href: '#admin-overview', label: labels.overview, code: '01' },
+    { href: '#admin-patient-form', label: labels.addPatient, code: '02' },
+    { href: '#admin-appointment-form', label: labels.createAppointment, code: '03' },
+    { href: '#admin-patients', label: labels.patientList, code: '04' },
+    { href: '#admin-appointments', label: labels.appointmentList, code: '05' },
+    { href: '#admin-requests', label: labels.requestList, code: '06' }
+  ];
 
   const stats = useMemo(() => ({
     patients: patients.length,
@@ -75,7 +104,7 @@ export default function AdminDashboard() {
       });
 
       setPatientForm(emptyPatient);
-      setMessage('Hasta başarıyla eklendi.');
+      setMessage(language === 'en' ? 'Patient was added successfully.' : 'Hasta başarıyla eklendi.');
       await loadAll();
     } catch (err) {
       setMessage(err.message);
@@ -97,7 +126,7 @@ export default function AdminDashboard() {
       });
 
       setAppointmentForm(emptyAppointment);
-      setMessage('Randevu başarıyla oluşturuldu.');
+      setMessage(language === 'en' ? 'Appointment was created successfully.' : 'Randevu başarıyla oluşturuldu.');
       await loadAll();
     } catch (err) {
       setMessage(err.message);
@@ -121,50 +150,50 @@ export default function AdminDashboard() {
   }
 
   return (
-    <DashboardLayout title="Admin / Receptionist Dashboard">
+    <DashboardLayout title={labels.title} navItems={navItems} summary={labels.summary}>
       {message && <div className="alert">{message}</div>}
 
-      <section className="dash-stats">
-        <div className="dash-stat-card"><span>Hasta Sayısı</span><strong>{stats.patients}</strong></div>
-        <div className="dash-stat-card"><span>Randevu Sayısı</span><strong>{stats.appointments}</strong></div>
-        <div className="dash-stat-card"><span>Yeni Talep</span><strong>{stats.requests}</strong></div>
+      <section className="dash-stats" id="admin-overview">
+        <div className="dash-stat-card"><span>{labels.patientCount}</span><strong>{stats.patients}</strong></div>
+        <div className="dash-stat-card"><span>{labels.appointmentCount}</span><strong>{stats.appointments}</strong></div>
+        <div className="dash-stat-card"><span>{labels.newRequests}</span><strong>{stats.requests}</strong></div>
       </section>
 
       <section className="dash-grid two">
-        <article className="panel-card">
-          <h2>Yeni Hasta Ekle</h2>
+        <article className="panel-card" id="admin-patient-form">
+          <h2>{labels.newPatient}</h2>
           <form onSubmit={createPatient} className="compact-form">
             <div className="form-row">
-              <input name="firstName" value={patientForm.firstName} onChange={updatePatient} required placeholder="Ad" />
-              <input name="lastName" value={patientForm.lastName} onChange={updatePatient} required placeholder="Soyad" />
+              <input name="firstName" value={patientForm.firstName} onChange={updatePatient} required placeholder={labels.firstName} />
+              <input name="lastName" value={patientForm.lastName} onChange={updatePatient} required placeholder={labels.lastName} />
             </div>
             <div className="form-row">
-              <input name="nationalId" value={patientForm.nationalId} onChange={updatePatient} placeholder="TC / Kimlik No" />
-              <input name="phone" value={patientForm.phone} onChange={updatePatient} required placeholder="Telefon" />
+              <input name="nationalId" value={patientForm.nationalId} onChange={updatePatient} placeholder={labels.id} />
+              <input name="phone" value={patientForm.phone} onChange={updatePatient} required placeholder={labels.phone} />
             </div>
             <div className="form-row">
-              <input name="email" value={patientForm.email} onChange={updatePatient} type="email" placeholder="E-posta" />
+              <input name="email" value={patientForm.email} onChange={updatePatient} type="email" placeholder={labels.email} />
               <input name="birthDate" value={patientForm.birthDate} onChange={updatePatient} type="date" />
             </div>
             <div className="form-row">
               <select name="gender" value={patientForm.gender} onChange={updatePatient}>
-                <option value="">Cinsiyet</option>
-                <option value="Female">Kadın</option>
-                <option value="Male">Erkek</option>
-                <option value="Other">Diğer</option>
+                <option value="">{labels.gender}</option>
+                <option value="Female">{labels.female}</option>
+                <option value="Male">{labels.male}</option>
+                <option value="Other">{labels.other}</option>
               </select>
-              <input name="address" value={patientForm.address} onChange={updatePatient} placeholder="Adres" />
+              <input name="address" value={patientForm.address} onChange={updatePatient} placeholder={labels.address} />
             </div>
-            <textarea name="notes" value={patientForm.notes} onChange={updatePatient} placeholder="Notlar" />
-            <button className="btn-primary full">Hasta Ekle</button>
+            <textarea name="notes" value={patientForm.notes} onChange={updatePatient} placeholder={labels.notes} />
+            <button className="btn-primary full">{labels.savePatient}</button>
           </form>
         </article>
 
-        <article className="panel-card">
-          <h2>Randevu Oluştur</h2>
+        <article className="panel-card" id="admin-appointment-form">
+          <h2>{labels.createAppointment}</h2>
           <form onSubmit={createAppointment} className="compact-form">
             <select name="patientId" value={appointmentForm.patientId} onChange={updateAppointment} required>
-              <option value="">Hasta seç</option>
+              <option value="">{labels.selectPatient}</option>
               {patients.map((patient) => (
                 <option key={patient.id} value={patient.id}>
                   {patient.first_name} {patient.last_name}
@@ -173,7 +202,7 @@ export default function AdminDashboard() {
             </select>
 
             <select name="dentistId" value={appointmentForm.dentistId} onChange={updateAppointment} required>
-              <option value="">Diş hekimi seç</option>
+              <option value="">{labels.selectDentist}</option>
               {dentists.map((dentist) => (
                 <option key={dentist.id} value={dentist.id}>
                   {dentist.name} — {dentist.specialization}
@@ -186,27 +215,27 @@ export default function AdminDashboard() {
               <input name="appointmentTime" value={appointmentForm.appointmentTime} onChange={updateAppointment} type="time" required />
             </div>
 
-            <input name="service" value={appointmentForm.service} onChange={updateAppointment} placeholder="Hizmet" required />
-            <textarea name="notes" value={appointmentForm.notes} onChange={updateAppointment} placeholder="Randevu notu" />
-            <button className="btn-primary full">Randevu Oluştur</button>
+            <input name="service" value={appointmentForm.service} onChange={updateAppointment} placeholder={labels.service} required />
+            <textarea name="notes" value={appointmentForm.notes} onChange={updateAppointment} placeholder={labels.appointmentNote} />
+            <button className="btn-primary full">{labels.saveAppointment}</button>
           </form>
         </article>
       </section>
 
-      <section className="panel-card">
-        <h2>Hastalar</h2>
+      <section className="panel-card" id="admin-patients">
+        <h2>{labels.patientList}</h2>
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Ad Soyad</th><th>Telefon</th><th>E-posta</th><th>Not</th></tr>
+              <tr><th>{labels.fullName}</th><th>{labels.phone}</th><th>{labels.email}</th><th>{labels.notes}</th></tr>
             </thead>
             <tbody>
               {patients.map((patient) => (
                 <tr key={patient.id}>
                   <td>{patient.first_name} {patient.last_name}</td>
                   <td>{patient.phone}</td>
-                  <td>{patient.email || '-'}</td>
-                  <td>{patient.notes || '-'}</td>
+                  <td>{patient.email || labels.noValue}</td>
+                  <td>{patient.notes || labels.noValue}</td>
                 </tr>
               ))}
             </tbody>
@@ -214,12 +243,12 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      <section className="panel-card">
-        <h2>Randevular</h2>
+      <section className="panel-card" id="admin-appointments">
+        <h2>{labels.appointmentList}</h2>
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Tarih</th><th>Saat</th><th>Hasta</th><th>Dentist</th><th>Hizmet</th><th>Durum</th><th>İşlem</th></tr>
+              <tr><th>{labels.date}</th><th>{labels.time}</th><th>{labels.fullName}</th><th>{labels.dentist}</th><th>{labels.service}</th><th>{labels.status}</th><th>{labels.action}</th></tr>
             </thead>
             <tbody>
               {appointments.map((appointment) => (
@@ -244,12 +273,12 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      <section className="panel-card">
-        <h2>Web Sitesinden Gelen Randevu Talepleri</h2>
+      <section className="panel-card" id="admin-requests">
+        <h2>{labels.requestList}</h2>
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Tarih</th><th>Ad Soyad</th><th>Telefon</th><th>Hizmet</th><th>Tercih</th><th>Durum</th><th>İşlem</th></tr>
+              <tr><th>{labels.date}</th><th>{labels.fullName}</th><th>{labels.phone}</th><th>{labels.service}</th><th>{labels.preference}</th><th>{labels.status}</th><th>{labels.action}</th></tr>
             </thead>
             <tbody>
               {requests.map((request) => (
@@ -258,7 +287,7 @@ export default function AdminDashboard() {
                   <td>{request.full_name}</td>
                   <td>{request.phone}</td>
                   <td>{request.service}</td>
-                  <td>{request.preferred_date?.slice(0, 10) || '-'} / {request.preferred_time || '-'}</td>
+                  <td>{request.preferred_date?.slice(0, 10) || labels.noValue} / {request.preferred_time || labels.noValue}</td>
                   <td><span className={`status ${request.status.toLowerCase()}`}>{request.status}</span></td>
                   <td>
                     <select value={request.status} onChange={(event) => updateRequestStatus(request.id, event.target.value)}>
