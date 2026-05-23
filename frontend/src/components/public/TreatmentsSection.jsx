@@ -1,40 +1,48 @@
 import ScrollReveal from './ScrollReveal.jsx';
 import TreatmentIcon from './TreatmentIcon.jsx';
-import { treatments } from '../../data/treatments.js';
+import { treatments, treatmentsNote } from '../../data/treatments.js';
 
 export default function TreatmentsSection() {
   return (
-    <section className="section treatments-section" id="tedaviler">
+    <section className="treatments-section" id="tedaviler">
       <div className="container">
-        <ScrollReveal>
-          <div className="section-heading centered">
-            <span className="section-label">Tedavilerimiz</span>
-            <h2>Parla Dental’de sunulan tedavi hizmetleri</h2>
-            <p>
-              Kliniğimizde tüm tedavi süreçleri; hasta konforu, hijyen,
-              estetik beklenti ve uzun dönem ağız sağlığı ön planda tutularak
-              planlanmaktadır.
-            </p>
-          </div>
+        <ScrollReveal className="treatments-heading">
+          <div className="section-label">Tedavilerimiz</div>
+          <h2>Parla Dental Tedavi Alanları</h2>
+          <p className="section-desc">
+            Estetik, implant, protetik, restoratif, cerrahi, ortodontik ve çocuk diş hekimliği alanlarında
+            kapsamlı ağız ve diş sağlığı çözümleri sunuyoruz.
+          </p>
         </ScrollReveal>
 
         <div className="treatments-grid">
           {treatments.map((treatment, index) => (
-            <ScrollReveal key={treatment.title} delay={index * 80}>
-              <article className="treatment-card">
-                <TreatmentIcon title={treatment.title} />
-
-                <h3>{treatment.title}</h3>
-
-                <ul>
-                  {treatment.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </article>
+            <ScrollReveal
+              as="article"
+              className="treatment-card"
+              key={treatment.title}
+              delay={index * 70}
+            >
+              <div className="treatment-card-top">
+                <TreatmentIcon name={treatment.icon} />
+                <span className="treatment-number">{String(index + 1).padStart(2, '0')}</span>
+              </div>
+              <h3>{treatment.title}</h3>
+              <p>{treatment.description}</p>
+              <ul>
+                {treatment.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
             </ScrollReveal>
           ))}
         </div>
+
+        <ScrollReveal className="treatments-note" delay={120}>
+          <div className="note-icon">✦</div>
+          <p>{treatmentsNote}</p>
+          <a className="btn-primary" href="#randevu">Tedavi İçin Randevu Al</a>
+        </ScrollReveal>
       </div>
     </section>
   );
